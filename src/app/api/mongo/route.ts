@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { NextRequest, NextResponse } from 'next/server';
+import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 // npm install mongodb
 // npm install @types/mongodb --save-dev
 
@@ -33,3 +33,21 @@ export async function GET() {
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
   }
 }
+
+// Handles PUT requests to add a customer
+export async function PUT(request: NextRequest) {
+  const body = await request.json();
+  const { _id, name, email } = body;
+  await connectToDatabase();
+  const newCustomer = {
+    _id: new ObjectId(_id),
+    id: _id,
+    name,
+    email,
+  };
+
+  const insertResult = await client.db("powersync").collection("customers").insertOne(newCustomer);
+  return NextResponse.json({ message: 'Customer added successfully', id: insertResult.insertedId });
+}
+
+
