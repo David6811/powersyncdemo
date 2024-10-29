@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Customers } from '../domain/data/interfaces';
 import './styles.css';
-import { addCustomerToLocalDB, findAllData, setupPowerSync } from '../services/database';
-import { deleteCustomerFromMongo } from '../services/MongoDBService';
+import { addCustomerToLocalDB, deleteCustomerFromLocalDB, findAllData, setupPowerSync } from '../services/database';
 
 const App: React.FC = () => {
     const [data, setData] = useState<Customers[] | null>(null);
@@ -19,6 +18,16 @@ const App: React.FC = () => {
         };
 
         initPowerSync();
+
+        // Set up polling to call findAllData every second
+        const intervalId = setInterval(async () => {
+            const customers = await findAllData();
+            setData(customers); // Update the state with new data every second
+        }, 50);
+
+        // Cleanup interval when component unmounts
+        return () => clearInterval(intervalId);
+
     }, []);
 
     const handleAdd = async () => {
@@ -35,7 +44,7 @@ const App: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        await deleteCustomerFromMongo(id);
+        await deleteCustomerFromLocalDB(id);
         const customers = await findAllData();
         setData(customers); // Store the fetched data in state
     };

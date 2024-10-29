@@ -3,7 +3,7 @@ import { AppSchema } from "../domain/data/CustomerSchema";
 import { POWERSYNC_ENDPOINT, POWERSYNC_TOKEN } from "../config/_powersyncConfig";
 import { Customers } from "../domain/data/interfaces";
 import { generateObjectId } from "../domain/calculations/generators";
-import { saveCustomerToMongo } from "./MongoDBService";
+import { deleteCustomerFromMongo, saveCustomerToMongo } from "./MongoDBService";
 
 export const findAllData = async (): Promise<Customers[]> => {
     const result = await db.getAll('SELECT * FROM customers');
@@ -20,6 +20,16 @@ export const addCustomerToLocalDB = async (name: string, email: string) => {
         [id, _id, name, email]
     );
 };
+
+
+export const deleteCustomerFromLocalDB = async (id: string) => {
+    const result = await db.execute(
+        'DELETE FROM customers WHERE id = ?',
+        [id]
+    );
+    return result;
+};
+
 
 class Connector {
     constructor() {
@@ -45,8 +55,15 @@ class Connector {
             const { op: opType, table } = operation;
             console.log("op", { op: opType, table });
             const { _id, name, email } = operation.opData || {};
-            console.log("!!operation: ", operation.opData);
-            if (opType == "PUT") { saveCustomerToMongo(_id, name, email); }
+            // console.log("opData: ", operation.opData);
+            if (opType == "PUT") { 
+                saveCustomerToMongo(_id, name, email); 
+                console.log("saveing customer remotely...");
+            }
+            if (opType === "DELETE") {
+                deleteCustomerFromMongo(operation.id);
+                console.log("deleting customer remotely...");
+            }
         }
         await transaction.complete();
     }
