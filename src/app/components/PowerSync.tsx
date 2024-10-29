@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { Customers } from '../domain/data/interfaces';
 import './styles.css';
-import { findAllData, setupPowerSync } from '../services/database';
+import { addCustomerToLocalDB, findAllData, setupPowerSync } from '../services/database';
 
 const App: React.FC = () => {
     const [data, setData] = useState<Customers[] | null>(null);
+    const [name, setName] = useState<string>('John Doe'); // Default name
+    const [email, setEmail] = useState<string>('john.doe@example.com'); // Default email
 
     useEffect(() => {
         const initPowerSync = async () => {
@@ -18,9 +20,39 @@ const App: React.FC = () => {
         initPowerSync();
     }, []);
 
+    const handleAdd = async () => {
+        if (!name || !email) {
+            alert("Please enter both name and email."); // Alert if fields are empty
+            return;
+        }
+
+        await addCustomerToLocalDB(name, email);
+        const customers = await findAllData();
+        setData(customers);
+        setName('John Doe');
+        setEmail('john.doe@example.com');
+    };
+
 
     return (
         <div className="app-container">
+            <div className="input-container">
+                <input
+                    type="text"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="input-field"
+                />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="input-field"
+                />
+                <button onClick={handleAdd} className="add-button">ADD</button>
+            </div>
             <div className="customer-list">
                 {data && data.length > 0 ? (
                     <ul>
@@ -33,7 +65,7 @@ const App: React.FC = () => {
                         ))}
                     </ul>
                 ) : (
-                    <span>No data available</span> // Display a message if no data exists
+                    <span>No data available</span>
                 )}
             </div>
         </div>
