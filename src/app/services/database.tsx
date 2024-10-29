@@ -1,6 +1,12 @@
 import { AbstractPowerSyncDatabase, PowerSyncDatabase } from "@powersync/web";
 import { AppSchema } from "../domain/data/CustomerSchema";
 import { POWERSYNC_ENDPOINT, POWERSYNC_TOKEN } from "../config/_powersyncConfig";
+import { Customers } from "../domain/data/interfaces";
+
+export const findAllData = async (): Promise<Customers[]> => {
+    const result = await db.getAll('SELECT * FROM customers');
+    return result as Customers[];
+};
 
 class Connector {
     constructor() {
