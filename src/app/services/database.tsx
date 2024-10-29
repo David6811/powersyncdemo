@@ -2,10 +2,22 @@ import { AbstractPowerSyncDatabase, PowerSyncDatabase } from "@powersync/web";
 import { AppSchema } from "../domain/data/CustomerSchema";
 import { POWERSYNC_ENDPOINT, POWERSYNC_TOKEN } from "../config/_powersyncConfig";
 import { Customers } from "../domain/data/interfaces";
+import { generateObjectId } from "../domain/calculations/generators";
 
 export const findAllData = async (): Promise<Customers[]> => {
     const result = await db.getAll('SELECT * FROM customers');
     return result as Customers[];
+};
+
+export const addCustomerToLocalDB = async (name: string, email: string) => {
+    const uni_id = generateObjectId();
+    const id = uni_id;
+    const _id = uni_id;
+
+    await db.execute(
+        'INSERT INTO customers(id, _id, name, email) VALUES(?, ?, ?, ?)',
+        [id, _id, name, email]
+    );
 };
 
 class Connector {
