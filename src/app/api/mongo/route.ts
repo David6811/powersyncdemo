@@ -28,7 +28,8 @@ export async function GET() {
     await connectToDatabase();
     await client.db("admin").command({ ping: 1 });
     return NextResponse.json("Pinged your deployment. You successfully connected to MongoDB!");
-  } catch (error) {
+  } catch (error: unknown) {
+    console.log(error);
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
   }
 }
