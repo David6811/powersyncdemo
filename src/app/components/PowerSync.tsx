@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Customers } from '../domain/data/interfaces';
 import './styles.css';
 import { addCustomerToLocalDB, findAllData, setupPowerSync } from '../services/database';
+import { deleteCustomerFromMongo } from '../services/MongoDBService';
 
 const App: React.FC = () => {
     const [data, setData] = useState<Customers[] | null>(null);
@@ -33,6 +34,11 @@ const App: React.FC = () => {
         setEmail('john.doe@example.com');
     };
 
+    const handleDelete = async (id: string) => {
+        await deleteCustomerFromMongo(id);
+        const customers = await findAllData();
+        setData(customers); // Store the fetched data in state
+    };
 
     return (
         <div className="app-container">
@@ -61,6 +67,13 @@ const App: React.FC = () => {
                                 <span className="item-id">{item.id}</span>
                                 <span className="item-name">{item.name}</span>
                                 <span className="item-email">{item.email}</span>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="delete-button"
+                                    title="Delete"
+                                >
+                                    Delete
+                                </button>
                             </li>
                         ))}
                     </ul>
@@ -73,3 +86,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

@@ -15,7 +15,7 @@ export const saveCustomerToMongo = async (_id: string, name: string, email: stri
     await response.json();
 };
 
-const deleteCustomerFromMongo = async (id: string) => {
+export const deleteCustomerFromMongo = async (id: string) => {
     try {
         const response = await fetch('/api/mongo', {
             method: 'DELETE',
