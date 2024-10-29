@@ -3,6 +3,7 @@ import { AppSchema } from "../domain/data/CustomerSchema";
 import { POWERSYNC_ENDPOINT, POWERSYNC_TOKEN } from "../config/_powersyncConfig";
 import { Customers } from "../domain/data/interfaces";
 import { generateObjectId } from "../domain/calculations/generators";
+import { saveCustomerToMongo } from "./MongoDBService";
 
 export const findAllData = async (): Promise<Customers[]> => {
     const result = await db.getAll('SELECT * FROM customers');
@@ -34,6 +35,20 @@ class Connector {
 
     async uploadData(database: AbstractPowerSyncDatabase) { //AbstractPowerSyncDatabase
         console.log("Trying to upload data to server...", database);
+        const transaction = await database.getNextCrudTransaction();
+        if (!transaction) {
+            console.log("No transactions!");
+            return;
+        }
+
+        for (const operation of transaction.crud) {
+            const { op: opType, table } = operation;
+            console.log("op", { op: opType, table });
+            const { _id, name, email } = operation.opData || {};
+            console.log("!!operation: ", operation.opData);
+            if (opType == "PUT") { saveCustomerToMongo(_id, name, email); }
+        }
+        await transaction.complete();
     }
 }
 
