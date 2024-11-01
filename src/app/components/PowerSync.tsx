@@ -19,14 +19,15 @@ const App: React.FC = () => {
 
         initPowerSync();
 
-        // Set up polling to call findAllData every second
-        const intervalId = setInterval(async () => {
-            const customers = await findAllData();
-            setData(customers); // Update the state with new data every second
-        }, 50);
+        // // Set up polling to call findAllData every second
+        // const intervalId = setInterval(async () => {
+        //     await setupPowerSync();
+        //     const customers = await findAllData();
+        //     setData(customers); // Update the state with new data every second
+        // }, 1000);
 
-        // Cleanup interval when component unmounts
-        return () => clearInterval(intervalId);
+        // // Cleanup interval when component unmounts
+        // return () => clearInterval(intervalId);
 
     }, []);
 

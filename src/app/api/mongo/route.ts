@@ -3,7 +3,7 @@ import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 // npm install mongodb
 // npm install @types/mongodb --save-dev
 
-const uri = "mongodb://xuwei19850423:OoOMdNaqqCR3FyIX@clusterpowersyncdemo-shard-00-02.9dax1.mongodb.net/powersync?ssl=true&authSource=admin";
+const uri = "mongodb://xuwei19850423:xuwei6811@clusterpowersyncdemo-shard-00-02.9dax1.mongodb.net/powersync?ssl=true&authSource=admin";
 
 // Create a global variable to hold the MongoDB client
 let client: MongoClient;

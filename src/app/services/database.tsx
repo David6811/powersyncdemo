@@ -7,17 +7,15 @@ import { deleteCustomerFromMongo, saveCustomerToMongo } from "./MongoDBService";
 
 export const findAllData = async (): Promise<Customers[]> => {
     const result = await db.getAll('SELECT * FROM customers');
+    console.log("Result: ", result)
     return result as Customers[];
 };
 
 export const addCustomerToLocalDB = async (name: string, email: string) => {
     const uni_id = generateObjectId();
-    const id = uni_id;
-    const _id = uni_id;
-
     await db.execute(
         'INSERT INTO customers(id, _id, name, email) VALUES(?, ?, ?, ?)',
-        [id, _id, name, email]
+        [uni_id, uni_id, name, email]
     );
 };
 
@@ -31,7 +29,7 @@ export const deleteCustomerFromLocalDB = async (id: string) => {
 };
 
 
-class Connector {
+export class Connector {
     constructor() {
         // Setup a connection to your server for uploads
         //this.serverConnectionClient = TODO; 
@@ -72,7 +70,7 @@ class Connector {
 export const db = new PowerSyncDatabase({
     schema: AppSchema,
     database: {
-        dbFilename: 'customers.db'
+        dbFilename: 'powersync.db'
     },
     flags: {
         enableMultiTabs: true
